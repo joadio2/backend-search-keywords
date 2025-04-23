@@ -16,6 +16,6 @@ export class AnalyzeController {
 
   @Post()
   create(@Body() data: AnalyzeDto) {
-    return this.analyzeService.analyze(data);
+    return this.analyzeService.analyzeRunNow(data);
   }
 }

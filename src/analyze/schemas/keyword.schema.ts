@@ -21,8 +21,8 @@ export const ReportSchema = new Schema(
     reportType: { type: String, required: true },
     status: {
       type: String,
-      enum: ['pendiente', 'procesando', 'finalizado', 'fallido'],
-      default: 'pendiente',
+      enum: ['pending', 'processing', 'finished', 'failed'],
+      default: 'pending',
     },
     matchCount: { type: Number, required: true },
     matches: {
