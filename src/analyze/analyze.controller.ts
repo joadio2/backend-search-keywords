@@ -1,12 +1,13 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+ UsePipes,
+  ValidationPipe,
+  Res,
+  HttpStatus
 } from '@nestjs/common';
+import { Response } from 'express';
 import { AnalyzeService } from './analyze.service';
 import { AnalyzeDto } from './dto/analyze.dto';
 
@@ -15,7 +16,14 @@ export class AnalyzeController {
   constructor(private readonly analyzeService: AnalyzeService) {}
 
   @Post()
-  create(@Body() data: AnalyzeDto) {
-    return this.analyzeService.analyzeRunNow(data);
+  @UsePipes(ValidationPipe)
+  async create(@Body() data: AnalyzeDto, @Res() res: Response) {
+    const response = await this.analyzeService.analyzeRunNow(data);
+    return res.status(HttpStatus.OK).json(
+      {
+        message: 'Analysis completed',
+        html: response
+      }
+    );
   }
 }

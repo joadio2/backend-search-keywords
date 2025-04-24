@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AnalyzeDto } from './dto/analyze.dto';
 import { OpenAIService } from '../open-ia/open-ia.service';
 import { extractText } from '../common/utils/extractText';
 import { getUrl } from './functions/getUrl';
-import { analyzeMatchesInText } from './functions/fechtMatches';
+import { analyzeMatchesInText } from './functions/context';
 import { createDocument } from './functions/pushDocument';
-
+import { indexFunction } from './functions/htmlIndex';
+import { htmlReport } from './functions/htmlBody';
+import { ReportData } from './functions/interfaceMatches';
 @Injectable()
 export class AnalyzeService {
   constructor(
@@ -25,7 +27,35 @@ export class AnalyzeService {
   }: AnalyzeDto) {
     const results = [];
 
-    for (let originalUrl of urls) {
+    let CompleteHtml = `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Detailed Report</title>
+        <style>
+          body {
+            width: 210mm;
+            margin: 10px auto;
+            border: 2px solid #939292;
+            border-radius: 5px;
+            padding: 0;
+            font-family: "Roboto", sans-serif;
+            background-color: #fff;
+            color: #333;
+          }
+          </style>
+          <body>    
+    `;
+    const data = {
+      urls,
+      keywords,
+    };
+    const indexHtml = await indexFunction(data);
+
+    CompleteHtml += indexHtml;
+    for (const originalUrl of urls) {
       try {
         const processedUrl = getUrl(originalUrl);
 
@@ -43,28 +73,24 @@ export class AnalyzeService {
           allMatches,
         );
 
-        if (mongoId) {
-          results.push({
-            originalUrl,
-            matches: allMatches,
-            mongoId,
-          });
+        if (data) {
+          const reportDoc = await this.reportModel
+            .findById(mongoId)
+            .lean<ReportData>();
+          if (reportDoc !== null) {
+            const plainReport = JSON.parse(JSON.stringify(reportDoc));
+            const getReport = await htmlReport(plainReport);
+            CompleteHtml += getReport;
+          }
         } else {
           results.push({
             originalUrl,
             message: 'Not found matches',
           });
         }
-      } catch (error) {
-        console.error('Error procesando el URL:', originalUrl, error);
-        results.push({ originalUrl, error: error.message });
-      }
+      } catch (error) {}
     }
-
-    return {
-      status: 'success',
-      totalDocuments: results.length,
-      results,
-    };
+    CompleteHtml += '</body></html>';
+    return CompleteHtml;
   }
 }
