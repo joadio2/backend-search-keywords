@@ -23,7 +23,7 @@ export class ScheduleTaskController {
 
       return res.status(HttpStatus.CREATED).json({
         message: 'Task scheduled successfully',
-        scheduleTask: scheduleTask,
+        scheduleTask: scheduleTask.scheduleAt,
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

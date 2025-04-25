@@ -14,8 +14,11 @@ const HEADERS = {
     'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 };
 
+// Allowed file extensions
+const ALLOWED_FILE_EXTENSIONS = ['.pdf', '.docx', '.txt'];
+
 export async function extractText(url: string): Promise<string[]> {
-  console.log(`Procesando URL: ${url}`);
+  console.log(`Processing URL: ${url}`);
 
   const response = await axios.get(url, {
     responseType: 'arraybuffer',
@@ -25,31 +28,42 @@ export async function extractText(url: string): Promise<string[]> {
   const contentType = response.headers['content-type'];
   const texts: string[] = [];
 
-  // if a webpage
+  // If it's a webpage
   if (contentType.includes('text/html')) {
     const html = response.data.toString('utf-8');
     const $ = cheerio.load(html);
-    const links: string[] = [];
 
+    // Remove irrelevant elements from the HTML (like headers, scripts, etc.)
+    $('header, footer, nav, script, style').remove();
+
+    // Extract only the content from the body
+    const bodyText = $('body').text().trim();
+
+    // If there is text in the body, add it to the results
+    if (bodyText) {
+      texts.push(bodyText);
+    }
+
+    // Search for valid file links on the page
+    const links: string[] = [];
     $('a[href]').each((_, el) => {
       const href = $(el).attr('href');
-      if (href && href.match(/\.(pdf|docx|txt|html?)$/i)) {
+      if (href && isValidFileLink(href)) {
         links.push(new URL(href, url).href);
       }
     });
 
-    // Processes file links, extracting text from each and handling any errors.
-
+    // Process the file links found
     for (const link of links) {
       try {
         const fileText = await extractFileText(link);
-
         texts.push(fileText);
       } catch (err) {
-        console.warn(`Error procesando archivo en ${link}:`, err.message);
+        console.warn(`Error processing file at ${link}:`, err.message);
       }
     }
   } else {
+    // If it's a direct file, extract the text
     const fileText = await extractFileText(url);
     texts.push(fileText);
   }
@@ -65,7 +79,7 @@ export async function extractFileText(url: string): Promise<string> {
 
   const contentType = response.headers['content-type'];
 
-  // file type
+  // Determine file type and extract text accordingly
   if (contentType.includes('pdf')) {
     const data = await pdfParse(response.data);
     return data.text;
@@ -77,6 +91,16 @@ export async function extractFileText(url: string): Promise<string> {
   } else if (contentType.includes('html')) {
     return htmlToText(response.data.toString('utf-8'));
   } else {
-    throw new Error(`Tipo de archivo no soportado: ${contentType}`);
+    throw new Error(`Unsupported file type: ${contentType}`);
   }
+}
+
+// Validate if the file link is allowed
+function isValidFileLink(link: string): boolean {
+  const urlObj = new URL(link, 'https://example.com'); // 'https://example.com' is just a placeholder
+  const ext = urlObj.pathname
+    .slice(urlObj.pathname.lastIndexOf('.'))
+    .toLowerCase();
+
+  return ALLOWED_FILE_EXTENSIONS.includes(ext);
 }

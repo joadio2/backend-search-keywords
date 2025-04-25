@@ -1,14 +1,22 @@
+function escapeRegExp(str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function analyzeMatchesInText(texts: string[], keywords: string[]) {
   const allMatches = [];
 
+  console.log(`🧠 Starting text analysis with ${texts.length} blocks`);
+  console.log(`🔍 Keywords:`, keywords);
+
   for (const kw of keywords) {
+    const escapedKw = escapeRegExp(kw);
     const matches = [];
+    const regex = new RegExp(
+      `([\\s\\S]{0,100}?)(\\b${escapedKw}\\b)([\\s\\S]{0,100}?)`,
+      'gi',
+    );
 
     for (const text of texts) {
-      const regex = new RegExp(
-        `([\\s\\S]{0,100}?)(\\b${kw}\\b)([\\s\\S]{0,100}?)`,
-        'gi',
-      );
       const found = [...text.matchAll(regex)];
 
       for (const match of found) {
@@ -16,7 +24,7 @@ export function analyzeMatchesInText(texts: string[], keywords: string[]) {
         const keyword = match[2];
         let after = match[3];
 
-        // variants of punctuation for improved context
+        // Context trimming based on punctuation
         const backCut = Math.max(
           before.lastIndexOf('.'),
           before.lastIndexOf('('),
@@ -28,7 +36,6 @@ export function analyzeMatchesInText(texts: string[], keywords: string[]) {
           before = before.slice(backCut + 1).trimStart();
         }
 
-        // Cut forward if there is a punctuation nearby
         const forwardCut = after.search(/[.?!¡)]/);
         if (forwardCut !== -1) {
           after = after.slice(0, forwardCut + 1).trimEnd();
@@ -44,9 +51,14 @@ export function analyzeMatchesInText(texts: string[], keywords: string[]) {
     }
 
     if (matches.length > 0) {
+      console.log(`✅ "${kw}" → ${matches.length} matches found`);
+      console.log(`🔸 Example context: "${matches[0].context}"`);
       allMatches.push(...matches);
+    } else {
+      console.log(`⚠️ "${kw}" → 0 matches`);
     }
   }
 
+  console.log(`📊 Total matches found: ${allMatches.length}`);
   return allMatches;
 }
