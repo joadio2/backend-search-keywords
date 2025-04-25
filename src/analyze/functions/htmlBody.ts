@@ -29,11 +29,13 @@ export const htmlReport = async (data: ReportData) => {
             font-size: 16px;
             color: rgb(49, 49, 49);
             margin-bottom: 10px;
+            word-wrap: break-word;
           }
           .report-header h1 {
             font-size: 26px;
             text-align: center;
             margin: 0;
+            word-wrap: break-word;
           }
           .matches-section {
             margin-top: 30px;

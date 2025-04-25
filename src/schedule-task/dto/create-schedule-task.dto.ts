@@ -51,5 +51,5 @@ export class TaskDto {
 
   @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  userId: string;
 }

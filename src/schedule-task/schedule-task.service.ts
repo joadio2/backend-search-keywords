@@ -2,6 +2,8 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { agenda } from './agenda';
 import '../schedule-task/jobs/analyze.job';
 import { TaskDto } from './dto/create-schedule-task.dto';
+import { ScheduledJob } from './dto/Schedule.interface';
+import { promises } from 'dns';
 
 @Injectable()
 export class ScheduleTaskService implements OnModuleInit {
@@ -32,7 +34,6 @@ export class ScheduleTaskService implements OnModuleInit {
     };
   }
 
-  // Función para obtener la expresión cron mensual
   private getMonthlyCron(scheduleAt: string): string {
     const date = new Date(scheduleAt);
     const day = date.getUTCDate();
@@ -40,5 +41,31 @@ export class ScheduleTaskService implements OnModuleInit {
     const minute = date.getUTCMinutes();
 
     return `${minute} ${hour} ${day} * *`;
+  }
+
+  async getAll(userId: string): Promise<ScheduledJob[] | number> {
+    try {
+      const jobs = await agenda._collection
+        .find(
+          { 'data.userId': userId },
+          {
+            projection: {
+              _id: 1,
+              name: 1,
+              'data.userId': 1,
+              'data.reportType': 1,
+              'data.title': 1,
+              nextRunAt: 1,
+            },
+          },
+        )
+        .toArray();
+      if (jobs.length === 0) {
+        return 404;
+      }
+      return jobs as ScheduledJob[];
+    } catch (err) {
+      return 500;
+    }
   }
 }

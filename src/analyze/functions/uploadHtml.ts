@@ -37,11 +37,9 @@ export async function uploadFile(
 
     await s3.send(command);
 
-    // Aquí generamos la URL pública usando r2.dev
     const publicUrl = `${PUBLIC_URL_BASE}/${fileName}`;
     return publicUrl;
   } catch (error) {
-    console.error('Error uploading to R2:', error);
-    throw error;
+    return 'Failed to upload file to S3';
   }
 }

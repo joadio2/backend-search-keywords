@@ -5,7 +5,7 @@ interface IndexData {
   keywords: string[];
 }
 
-export const indexFunction = async (data: IndexData) => {
+export const htmlIndex = async (data: IndexData) => {
   try {
     const transformData = data.urls.map((url, i) => ({
       index: i + 1,
@@ -30,6 +30,7 @@ export const indexFunction = async (data: IndexData) => {
     }
 
     .report-header {
+      margin-left: 10px;
       text-align: left;
       font-size: 18px;  
       color: rgb(49, 49, 49);
@@ -38,6 +39,7 @@ export const indexFunction = async (data: IndexData) => {
     }
 
     .keywords-summary {
+      margin-left: 15px;
       font-size: 16px;
       color: #003366;
       margin-bottom: 20px;

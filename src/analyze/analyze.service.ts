@@ -4,16 +4,18 @@ import { extractText } from '../common/utils/extractText';
 import { getUrl } from './functions/getUrl';
 import { analyzeMatchesInText } from './functions/context';
 import { htmlReport } from './functions/htmlBody';
-import { uploadFile } from './functions/pushDocument';
+import { uploadFile } from './functions/uploadHtml';
 import { Report } from './schemas/keyword.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { time } from 'console';
+import { EmailService } from 'src/email/email.service';
+import { htmlIndex } from './functions/htmlIndex';
 @Injectable()
 export class AnalyzeService {
   constructor(
     @InjectModel(Report.name)
     private readonly reportModel: Model<Report>,
+    private readonly emailService: EmailService,
   ) {}
 
   async analyzeRunNow(data: AnalyzeDto) {
@@ -40,7 +42,12 @@ export class AnalyzeService {
           </style>
           <body>    
     `;
-
+    const indexHtml = await htmlIndex({
+      urls: data.urls,
+      keywords: data.keywords,
+    });
+    CompleteHtml += indexHtml;
+    // Generate HTML report for each URL
     for (const originalUrl of data.urls) {
       try {
         const processedUrl = getUrl(originalUrl);
@@ -70,13 +77,12 @@ export class AnalyzeService {
           });
         }
       } catch (error) {
-        console.error(`Error processing URL: ${originalUrl}`, error);
+        return 500;
       }
     }
-
     CompleteHtml += '</body></html>';
     const urlHtml = await uploadFile(CompleteHtml, data.title);
-    console.log('html url', urlHtml);
+    if (urlHtml === 'Failed to upload file to S3') return 500;
     const reportData = {
       url: urlHtml,
       title: data.title,
@@ -84,6 +90,12 @@ export class AnalyzeService {
     };
     await this.reportModel.create(reportData);
 
-    return CompleteHtml;
+    await this.emailService.sendMail(
+      data.email,
+      'Keyword Report',
+      CompleteHtml,
+      data.title,
+    );
+    return urlHtml;
   }
 }
