@@ -6,10 +6,10 @@ import {
   IsNotEmpty,
   IsEmail,
   IsNumber,
-  IsISO8601,
+  IsDateString,
 } from 'class-validator';
 
-export class CreateScheduleTaskDto {
+export class TaskDto {
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
@@ -25,24 +25,20 @@ export class CreateScheduleTaskDto {
   email?: string;
 
   @IsBoolean()
-  @IsNotEmpty()
-  schedule: boolean;
+  @IsOptional()
+  schedule?: boolean;
 
-  @IsISO8601()
-  @IsNotEmpty()
-  scheduleAt: string;
+  @IsDateString()
+  @IsOptional()
+  scheduleAt?: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  userId: number;
+  @IsBoolean()
+  @IsOptional()
+  repeatMonthly?: boolean;
 
   @IsString()
-  @IsOptional()
-  role?: string;
-
-  @IsString()
-  @IsOptional()
-  name?: string;
+  @IsNotEmpty()
+  title: string;
 
   @IsString()
   @IsNotEmpty()
@@ -52,4 +48,8 @@ export class CreateScheduleTaskDto {
   @IsString({ each: true })
   @IsOptional()
   tags?: string[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  userId: number;
 }

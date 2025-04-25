@@ -1,39 +1,16 @@
-import { Schema } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export const ReportMatchSchema = new Schema({
-  keyword: { type: String, required: true },
-  context: { type: String, required: true },
-  page: { type: Number, required: false },
-});
+@Schema({ timestamps: true, collection: 'reports' })
+export class Report extends Document {
+  @Prop({ required: true })
+  title: string;
 
-export const ReportUserSchema = new Schema({
-  userId: { type: Number, required: true },
-  name: { type: String, required: false },
-  role: { type: String, required: false },
-});
+  @Prop({ required: true })
+  url: string;
 
-export const ReportSchema = new Schema(
-  {
-    url: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    createdBy: { type: ReportUserSchema, required: true },
-    isScheduled: { type: Boolean, required: true },
-    reportType: { type: String, required: true },
-    status: {
-      type: String,
-      enum: ['pending', 'processing', 'finished', 'failed'],
-      default: 'pending',
-    },
-    matchCount: { type: Number, required: true },
-    matches: {
-      type: [ReportMatchSchema],
-      required: true,
-      validate: {
-        validator: (matches) => matches.length > 0,
-        message: 'Debe haber al menos una coincidencia.',
-      },
-    },
-    tags: { type: [String], default: [] },
-  },
-  { timestamps: true },
-);
+  @Prop({ required: true })
+  userId: string;
+}
+
+export const ReportSchema = SchemaFactory.createForClass(Report);

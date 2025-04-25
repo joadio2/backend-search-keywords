@@ -8,10 +8,14 @@ agenda.define('analyze task', async (job) => {
 
   await analyzeService.analyzeRunNow({
     urls: data.urls,
+    email: data.email,
     keywords: data.keywords,
     userId: data.userId,
     schedule: true,
     reportType: data.reportType,
     tags: data.tags,
+    title: data.title,
+    scheduleAt: data.scheduleAt,
+    repeatMonthly: data.repeatMonthly,
   });
 });

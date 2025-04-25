@@ -7,11 +7,7 @@ export interface Match {
 export interface ReportData {
   _id?: string;
   url: string;
-  createdBy: {
-    userId: number;
-    name: string;
-    role: string;
-  };
+
   isScheduled: boolean;
   reportType: string;
   status: string;

@@ -1,30 +1,22 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable } from '@nestjs/common';
 import { AnalyzeDto } from './dto/analyze.dto';
-import { OpenAIService } from '../open-ia/open-ia.service';
 import { extractText } from '../common/utils/extractText';
 import { getUrl } from './functions/getUrl';
 import { analyzeMatchesInText } from './functions/context';
-import { createDocument } from './functions/pushDocument';
-import { indexFunction } from './functions/htmlIndex';
 import { htmlReport } from './functions/htmlBody';
-import { ReportData } from './functions/interfaceMatches';
+import { uploadFile } from './functions/pushDocument';
+import { Report } from './schemas/keyword.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { time } from 'console';
 @Injectable()
 export class AnalyzeService {
   constructor(
-    private readonly openAIService: OpenAIService,
-    @InjectModel('Report') private readonly reportModel: Model<any>,
+    @InjectModel(Report.name)
+    private readonly reportModel: Model<Report>,
   ) {}
 
-  async analyzeRunNow({
-    urls,
-    keywords,
-    userId,
-    schedule,
-    reportType,
-    tags,
-  }: AnalyzeDto) {
+  async analyzeRunNow(data: AnalyzeDto) {
     const results = [];
 
     let CompleteHtml = `
@@ -48,49 +40,50 @@ export class AnalyzeService {
           </style>
           <body>    
     `;
-    const data = {
-      urls,
-      keywords,
-    };
-    const indexHtml = await indexFunction(data);
 
-    CompleteHtml += indexHtml;
-    for (const originalUrl of urls) {
+    for (const originalUrl of data.urls) {
       try {
         const processedUrl = getUrl(originalUrl);
-
         const texts = await extractText(processedUrl);
 
-        const allMatches = analyzeMatchesInText(texts, keywords);
+        // Find matches in the text
+        const allMatches = analyzeMatchesInText(texts, data.keywords);
 
-        const mongoId = await createDocument(
-          this.reportModel,
-          originalUrl,
-          userId,
-          schedule,
-          reportType,
-          tags,
-          allMatches,
-        );
+        if (allMatches.length > 0) {
+          const reportData = {
+            url: originalUrl,
 
-        if (data) {
-          const reportDoc = await this.reportModel
-            .findById(mongoId)
-            .lean<ReportData>();
-          if (reportDoc !== null) {
-            const plainReport = JSON.parse(JSON.stringify(reportDoc));
-            const getReport = await htmlReport(plainReport);
-            CompleteHtml += getReport;
-          }
+            isScheduled: data.schedule,
+            reportType: data.reportType,
+            status: 'finished',
+            matchCount: allMatches.length,
+            matches: allMatches,
+            tags: data.tags,
+          };
+
+          const getReport = await htmlReport(reportData);
+          CompleteHtml += getReport;
         } else {
           results.push({
             originalUrl,
-            message: 'Not found matches',
+            message: 'No matches found.',
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error(`Error processing URL: ${originalUrl}`, error);
+      }
     }
+
     CompleteHtml += '</body></html>';
+    const urlHtml = await uploadFile(CompleteHtml, data.title);
+    console.log('html url', urlHtml);
+    const reportData = {
+      url: urlHtml,
+      title: data.title,
+      userId: data.userId,
+    };
+    await this.reportModel.create(reportData);
+
     return CompleteHtml;
   }
 }

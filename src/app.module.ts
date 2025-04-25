@@ -5,6 +5,7 @@ import { OpenIaModule } from './open-ia/open-ia.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleTaskModule } from './schedule-task/schedule-task.module';
+import { GetfilesModule } from './getfiles/getfiles.module';
 @Module({
   imports: [
     AnalyzeModule,
@@ -15,6 +16,7 @@ import { ScheduleTaskModule } from './schedule-task/schedule-task.module';
       envFilePath: '.env',
     }),
     ScheduleTaskModule,
+    GetfilesModule,
   ],
 })
 export class AppModule {}

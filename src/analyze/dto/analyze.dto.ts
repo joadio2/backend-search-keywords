@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsEmail,
   IsNumber,
+  IsDateString,
 } from 'class-validator';
 
 export class AnalyzeDto {
@@ -27,21 +28,17 @@ export class AnalyzeDto {
   @IsOptional()
   schedule?: boolean;
 
-  @IsString()
+  @IsDateString()
   @IsOptional()
-  scheduleTime?: string;
+  scheduleAt?: string;
 
-  @IsNumber()
+  @IsBoolean()
+  @IsOptional()
+  repeatMonthly?: boolean;
+
+  @IsString()
   @IsNotEmpty()
-  userId: number;
-
-  @IsString()
-  @IsOptional()
-  role?: string;
-
-  @IsString()
-  @IsOptional()
-  name?: string;
+  title: string;
 
   @IsString()
   @IsNotEmpty()
@@ -51,4 +48,8 @@ export class AnalyzeDto {
   @IsString({ each: true })
   @IsOptional()
   tags?: string[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  userId: number;
 }

@@ -64,7 +64,6 @@ export const htmlReport = async (data: ReportData) => {
           <div class="report-header">
             <h1>Detailed Report for URL:</h1>
             <h1>{{url}}</h1>
-            <p><strong>Created By:</strong> {{createdBy.name}} ({{createdBy.role}})</p>
             <p><strong>Match Count:</strong> {{matchCount}}</p>
             <p><strong>Status:</strong> {{status}}</p>
             <p><strong>Report Type:</strong> {{reportType}}</p>
