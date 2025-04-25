@@ -1,99 +1,209 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Here is an improved version of the backend documentation for **DocHawk** in markdown format. I've cleaned up the structure and added some additional details to improve clarity and readability.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Backend Project - DocHawk
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This is the backend for **DocHawk**, a platform that allows generating keyword reports. The platform supports both immediate and scheduled email reports. This service is built using **NestJS**.
 
-## Description
+## Prerequisites
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Before starting, ensure the following tools are installed:
 
-## Project setup
+- **Node.js** (version 22)
+- **npm** (comes with Node.js)
+- **MongoDB** (the database for storing task and user data)
+- **Mailer Service** (used for sending emails with the reports)
+
+## Installation
+
+Follow the instructions below to set up the project on your local machine:
+
+### Step 1: Clone the repository
 
 ```bash
-$ npm install
+git clone https://github.com/your_username/backend-search-keyword.git
+cd backend-search-keyword
 ```
 
-## Compile and run the project
+### Step 2: Configure environment variables
+
+Create a `.env` file in the root directory and add the following environment variables:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+EMAIL_N="YOUR_EMAIL"
+HOST="YOUR_PORT"
+PORT="PORT"
+PASSWORD_EMAIL="YOUR_PASSWORD_APP_EMAIL"
+MONGODB_URI="YOUR_STRING_URL_TO_MONGODB"
 ```
 
-## Run tests
+### Step 3: Install dependencies
+
+Install the necessary dependencies using npm:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
+### Step 4: Start the server
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+To run the server locally in development mode:
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Features
 
-## Resources
+1. **Sending Reports via Email**  
+   The backend allows sending keyword reports in HTML format via email. There are two ways to send the reports:
 
-Check out a few resources that may come in handy when working with NestJS:
+   - **Immediate Execution** (`/analyze`): Sends the keyword report immediately to the provided email address.
+   - **Scheduled Task** (`/schedule-task`): Allows scheduling the report to be sent at a specific date and time. There's also an option to set the task to repeat every month.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+2. **HTML Report Generation**  
+   Reports are generated in HTML format and can include various types of reports and tags, which the user can select when creating a task.
 
-## Support
+3. **Email Configuration**  
+   The backend uses a MailerService along with an email provider (Google Mailer or other SMTP servers) to send the reports via email. Ensure that the correct credentials are configured in the `.env` file.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+4. **Get Historical Data**  
+   The `/getfile` endpoint allows you to retrieve historical records from the database, including the URL of the report, the title, the userId, and the creation date of the report.
 
-## Stay in touch
+## How It Works
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 1. **Scheduling a Task**
 
-## License
+- The user submits a request to create a task, providing information such as title, email, report type, and tags.
+- If **"Schedule"** is selected, the user picks a date and time. The system stores the task in the database with the scheduled time.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 2. **Sending the Report**
+
+- The **MailerService** triggers the report delivery via email at the scheduled time. The system uses the Google SMTP server or another configured server for sending emails.
+- Reports can be sent immediately or at the scheduled time, and they can be set to repeat monthly.
+
+## Routes and Parameters
+
+### 1. **/schedule-task and /analyze**
+
+The `/analyze` function is responsible for executing the entire task.
+
+**Request Body Parameters:**
+
+```json
+{
+    "url": ["string"],               // The URL to be analyzed.
+    "keywords": ["string"],          // List of keywords to be tracked in the provided URL.
+    "email": ["string"],             // List of emails to which the report will be sent.
+    "schedule": boolean,             // Indicates if the task is scheduled (true) or immediate (false).
+    "scheduleAt": "string",          // The exact date and time when the task is scheduled to run (ISO 8601 format).
+    "repeatMonthly": boolean,        // If true, the task will repeat monthly.
+    "title": "string",               // The title of the report or task.
+    "reportType": "string",          // The type of the report to be generated.
+    "tags": ["string"],              // Tags associated with the task or report.
+    "userId": "string"               // A unique identifier for the user (usually IP + User-Agent).
+}
+```
+
+### 2. **How It Works**
+
+#### Immediate Execution (`schedule: false`):
+
+If the **schedule** parameter is set to `false`, the task will execute immediately. The system will trigger the analysis and send the report right away.
+
+#### Scheduled Tasks (`schedule: true`):
+
+If **schedule** is set to `true`, the task will run at the specified **scheduleAt** time. The task will repeat monthly if **repeatMonthly** is set to `true`. The report will be generated and sent according to the specified schedule.
+
+### Use Case Examples:
+
+#### Immediate Report:
+
+A user wants to track certain keywords and get a report right away. This is indicated by setting `schedule` to `false`.
+
+#### Scheduled Report:
+
+A user wants to track keywords monthly and receive a report at a specific time. This is indicated by setting `schedule` to `true`, specifying the `scheduleAt` date/time, and enabling `repeatMonthly` for recurring reports.
+
+### Notes:
+
+- The **scheduleAt** field must follow the ISO 8601 format for accurate scheduling.
+- The **repeatMonthly** field is effective only if **schedule** is set to `true`.
+- The **userId** helps uniquely identify users making requests and can be useful for debugging or tracking user activity.
+
+## Endpoints
+
+### 1. **POST /schedule-task**
+
+This endpoint is used to create a task that can be scheduled or executed immediately.
+
+**Request Body Example:**
+
+```json
+{
+  "url": ["https://example.com"],
+  "keywords": ["keyword1", "keyword2"],
+  "email": ["user@example.com"],
+  "schedule": true,
+  "scheduleAt": "2025-04-30T10:00:00Z",
+  "repeatMonthly": true,
+  "title": "Monthly Keyword Report",
+  "reportType": "Keyword Analysis",
+  "tags": ["SEO", "Analytics"],
+  "userId": "user123"
+}
+```
+
+### 2. **POST /analyze**
+
+This endpoint triggers an immediate report generation. The request body contains similar parameters as `/schedule-task`, but **schedule** will always be `false`.
+
+**Request Body Example:**
+
+```json
+{
+  "url": ["https://example.com"],
+  "keywords": ["keyword1", "keyword2"],
+  "email": ["user@example.com"],
+  "schedule": false,
+  "title": "Immediate Keyword Report",
+  "reportType": "Keyword Analysis",
+  "tags": ["SEO", "Analytics"],
+  "userId": "user123"
+}
+```
+
+### 3. **GET /getfile**
+
+This endpoint allows you to retrieve historical records from the database.
+
+**Response Example:**
+
+```json
+[
+  {
+    "url": "https://example.com",
+    "title": "Keyword Report",
+    "userId": "user123",
+    "createdAt": "2025-04-15T10:00:00Z"
+  },
+  {
+    "url": "https://another-example.com",
+    "title": "Traffic Analysis",
+    "userId": "user456",
+    "createdAt": "2025-04-14T09:00:00Z"
+  }
+]
+```
+
+## Conclusion
+
+The **DocHawk** backend provides a comprehensive platform for generating keyword-based reports. It integrates task scheduling, immediate report execution, monthly repetition, and email delivery of reports. By leveraging **NestJS**, it allows for a scalable and flexible solution for report generation and task management.
+
+### Key Changes:
+
+- The structure has been organized more logically.
+- The **How It Works** section is improved to explain the two execution types (immediate and scheduled).
+- Provided example JSON requests for clarity.
+- Added **GET /getfile** endpoint and its example.
+
+This structure should give both developers and users a clearer understanding of how the **DocHawk** backend functions and how to interact with its API.
