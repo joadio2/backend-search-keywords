@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
+
 import { AnalyzeDto } from './dto/analyze.dto';
-import { extractText } from '../common/utils/extractText';
+import { extractText } from './utils/extractText';
 import { getUrl } from './functions/getUrl';
-import { analyzeMatchesInText } from './functions/context';
-import { htmlReport } from './functions/htmlBody';
-import { uploadFile } from './functions/uploadHtml';
+
 import { Report } from './schemas/keyword.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { EmailService } from 'src/email/email.service';
-import { htmlIndex } from './functions/htmlIndex';
 
 @Injectable()
 export class AnalyzeService {
@@ -20,52 +18,65 @@ export class AnalyzeService {
   ) {}
 
   async analyzeRunNow(data: AnalyzeDto) {
-    const results = [];
+    try {
+      console.log('🔍 Starting analysis with data:', data);
+      const dataForSave = [];
+      for (const originalUrl of data.urls) {
+        try {
+          console.log(`🌐 Processing URL: ${originalUrl}`);
+          const processedUrl = getUrl(originalUrl);
+          console.log(`🔗 Processed URL: ${processedUrl}`);
 
-    console.log('🔍 Starting analysis with data:', data);
-
-    let CompleteHtml = `
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Detailed Report</title>
-      <style>
-        body {
-          width: 210mm;
-          margin: 10px auto;
-          border: 2px solid #939292;
-          border-radius: 5px;
-          padding: 0;
-          font-family: "Roboto", sans-serif;
-          background-color: #fff;
-          color: #333;
+          const texts = await extractText(
+            processedUrl,
+            data.keywords,
+            data.title,
+          );
+          console.log(`✅ extractText URL: ${processedUrl}`);
+          const save = {
+            url: processedUrl,
+            match: texts,
+            typeDocument: texts.typeDocument,
+            htmlDoc: texts.htmlDoc,
+          };
+          console.log(`✅ Saved URL: ${processedUrl}`);
+          dataForSave.push(save);
+          console.log(`✅ Saved dataForSave`);
+        } catch (error) {
+          console.log(`❌ Error processing URL ${originalUrl}:`, error);
+          continue;
         }
-      </style>
-    </head>
-    <body>
-  `;
+      }
+      console.log(`✅ dataForSave`);
+      const completeData = {
+        data: dataForSave,
+        title: data.title,
+        userId: data.userId,
+        reportType: data.reportType,
+        keywords: data.keywords,
+        tags: data.tags,
+      };
+      console.log(`✅ completeData`);
+      await this.reportModel.create(completeData);
+      console.log(`✅ Report saved`);
+      await this.emailService.sendMail(
+        data.email,
+        'Keyword Report',
+        data.title,
+      );
+      return {
+        status: 200,
+        message: 'REPORT SAVED',
+      };
+    } catch (error) {
+      console.log(`❌ Error analyzing data:`, error);
+      return {
+        status: 500,
+        message: error,
+      };
+    }
 
-    const indexHtml = await htmlIndex({
-      urls: data.urls,
-      keywords: data.keywords,
-    });
-    CompleteHtml += indexHtml;
-
-    for (const originalUrl of data.urls) {
-      try {
-        console.log(`🌐 Processing URL: ${originalUrl}`);
-        const processedUrl = getUrl(originalUrl);
-        console.log(`🔗 Processed URL: ${processedUrl}`);
-
-        const texts = await extractText(processedUrl);
-        console.log(
-          `📄 Extracted text (${texts.length} blocks):`,
-          texts.slice(0, 2),
-        ); // log the first 2 blocks
-
-        console.log(
+    /*   console.log(
           `🔑 Searching for keywords: ${JSON.stringify(data.keywords)}`,
         );
 
@@ -121,5 +132,6 @@ export class AnalyzeService {
     console.log(`✉️ Email sent to ${data.email}`);
 
     return urlHtml;
+  }*/
   }
 }

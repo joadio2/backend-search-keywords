@@ -5,8 +5,8 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsEmail,
-  IsNumber,
   IsDateString,
+  ValidateIf,
 } from 'class-validator';
 
 export class AnalyzeDto {
@@ -49,7 +49,9 @@ export class AnalyzeDto {
   @IsOptional()
   tags?: string[];
 
-  @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  @ValidateIf(
+    (obj) => typeof obj.userId === 'string' || typeof obj.userId === 'number',
+  )
+  userId: string | number;
 }

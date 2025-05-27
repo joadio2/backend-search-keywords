@@ -2,10 +2,12 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 const BUCKET_NAME = 'test-html';
 
-const ACCESS_KEY_ID = ;
-const SECRET_ACCESS_KEY =;
+const ACCESS_KEY_ID = 'ceb8d6f9c0883133fc6efa395fd95d44';
+const SECRET_ACCESS_KEY =
+  '63f991228e716cf768c1fc8ec477bfd611f8073cb7cc8fce6f2197041d947d4d';
 
-const R2_ENDPOINT =;
+const R2_ENDPOINT =
+  'https://ed5e9f2a9f6742d593d025c023d72040.r2.cloudflarestorage.com';
 const PUBLIC_URL_BASE = 'https://pub-101845c0643f4f30b922d9ae7cfe586d.r2.dev';
 
 const s3 = new S3Client({
@@ -23,7 +25,7 @@ export async function uploadFile(
   title: string,
 ): Promise<string> {
   try {
-    const fileName = `${title}.html`;
+    const fileName = `${title}-${Date.now()}.html`;
 
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,

@@ -9,7 +9,7 @@ import { EmailModule } from 'src/email/email.module';
     MongooseModule.forFeature([{ name: Report.name, schema: ReportSchema }]),
     EmailModule,
   ],
-
+  exports: [AnalyzeService],
   controllers: [AnalyzeController],
   providers: [AnalyzeService],
 })

@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     MailerModule.forRootAsync({
-      imports: [],
+      imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         transport: {
           host: configService.get('HOST'),
-          port: configService.get('PORT_EMAIL'),
+          port: parseInt(configService.get('PORT_EMAIL'), 10),
           secure: true,
           auth: {
             user: configService.get('EMAIL_N'),
@@ -18,7 +19,7 @@ import { ConfigService } from '@nestjs/config';
           },
         },
         defaults: {
-          from: '"Report Keywords" <your-email@gmail.com>',
+          from: `"Report Keywords" <${configService.get('EMAIL_N')}>`,
         },
       }),
       inject: [ConfigService],

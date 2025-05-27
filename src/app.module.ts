@@ -1,23 +1,20 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AnalyzeModule } from './analyze/analyze.module';
-import { OpenIaModule } from './open-ia/open-ia.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleTaskModule } from './schedule-task/schedule-task.module';
 import { GetfilesModule } from './getfiles/getfiles.module';
 import { EmailModule } from './email/email.module';
+import { GetReportModule } from './get-report/get-report.module';
 
 @Module({
   imports: [
     AnalyzeModule,
-    OpenIaModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ScheduleTaskModule,
-    GetfilesModule,
     EmailModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -26,6 +23,9 @@ import { EmailModule } from './email/email.module';
       }),
       inject: [ConfigService],
     }),
+    GetReportModule,
+    ScheduleTaskModule,
+    GetfilesModule,
   ],
 })
 export class AppModule {}
