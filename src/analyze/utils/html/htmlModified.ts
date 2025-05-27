@@ -1,8 +1,5 @@
 import * as cheerio from 'cheerio';
 import type { Element } from 'domhandler';
-import { DirFiles } from '../dirFiles';
-import { writeFile } from 'fs/promises';
-import * as path from 'path';
 
 type SegmentedHtml = {
   fileName: string;
@@ -70,10 +67,7 @@ export async function htmlModified(html: string): Promise<SegmentedHtml> {
   });
 
   const segmentedHtml = $.html();
-  const dir = await DirFiles();
   const fileName = `segmented-${Date.now()}.html`;
-  const filePath = path.join(dir, fileName);
-  await writeFile(filePath, segmentedHtml, 'utf-8');
 
   return {
     fileName: fileName,
