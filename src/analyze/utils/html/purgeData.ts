@@ -1,7 +1,7 @@
 export async function purgeData(data: any[]) {
   try {
     const response = await fetch(
-      'https://pythonbackend-searchkeywords.onrender.com/score',
+      'https://coral-app-2-j6yru.ondigitalocean.app/score',
       {
         method: 'POST',
         headers: {
