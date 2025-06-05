@@ -1,8 +1,6 @@
 import axios from 'axios';
 import * as mammoth from 'mammoth';
-import { URL } from 'url';
 import * as pdfParse from 'pdf-parse';
-import * as path from 'path';
 import { htmlModified } from './html/htmlModified';
 import { uploadFile } from '../functions/uploadHtml';
 import { getHtmlResponse } from './html/htmlResponse';

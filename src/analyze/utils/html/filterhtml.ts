@@ -1,11 +1,16 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as cheerio from 'cheerio';
-
-export async function filterHtml(fileName: string, keywords: string[]) {
-  const filePath = path.join(process.cwd(), 'files', fileName);
-  const html = await fs.readFile(filePath, 'utf-8');
-  const $ = cheerio.load(html);
+import axios from 'axios';
+export async function filterHtml(
+  fileName: string,
+  keywords: string[],
+  htmlContent: string,
+) {
+  const response = await axios.get(htmlContent, {
+    responseType: 'text',
+  });
+  const $ = cheerio.load(response.data);
 
   const matches: {
     id: string;

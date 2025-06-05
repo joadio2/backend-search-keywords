@@ -20,9 +20,14 @@ export async function getHtmlResponse(
 ): Promise<ResponseData> {
   try {
     const htmlDivided = await htmlModified(html);
-    const filterdKeywords = await filterHtml(htmlDivided.fileName, keyword);
-    const purgedData = await purgeData(filterdKeywords);
     const uploadHtml = await uploadFile(htmlDivided.html, title);
+    const filterdKeywords = await filterHtml(
+      htmlDivided.fileName,
+      keyword,
+      uploadHtml,
+    );
+    const purgedData = await purgeData(filterdKeywords);
+
     return {
       data: purgedData,
       htmlDoc: uploadHtml,
