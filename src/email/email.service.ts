@@ -21,7 +21,7 @@ export class EmailService {
   }
 
   private generateEmailHtml(subject: string, title: string): string {
-    const reportUrl = `http://localhost:5173/report?title=${encodeURIComponent(title)}`;
+    const reportUrl = `https://frontend-search-keywords.onrender.com/report?title=${encodeURIComponent(title)}`;
     return `
         <!DOCTYPE html>
         <html lang="en">

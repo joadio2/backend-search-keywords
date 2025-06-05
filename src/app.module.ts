@@ -7,6 +7,7 @@ import { ScheduleTaskModule } from './schedule-task/schedule-task.module';
 import { GetfilesModule } from './getfiles/getfiles.module';
 import { EmailModule } from './email/email.module';
 import { GetReportModule } from './get-report/get-report.module';
+import { HealtModule } from './healt/healt.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { GetReportModule } from './get-report/get-report.module';
     GetReportModule,
     ScheduleTaskModule,
     GetfilesModule,
+    HealtModule,
   ],
 })
 export class AppModule {}

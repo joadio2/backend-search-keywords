@@ -1,12 +1,15 @@
 export async function purgeData(data: any[]) {
   try {
-    const response = await fetch('http://127.0.0.1:8000/score', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      'https://pythonbackend-searchkeywords.onrender.com/score',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
       },
-      body: JSON.stringify(data),
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`Error del servidor: ${response.status}`);
